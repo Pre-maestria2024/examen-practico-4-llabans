@@ -10,9 +10,8 @@ def main():
     
     total_d = sum(D)
     
+
     if n == 0:
-        # Si n=0, ya estás "al máximo de salud" (o no hay que subir nada),
-        # entonces puedes vender todos los alimentos.
         print(total_d)
         return
     
@@ -23,21 +22,24 @@ def main():
     for i in range(m):
         hi, di = H[i], D[i]
         
-        new_dp = dp[:]  # clona la lista
+        new_dp = dp[:]
         
         for k in range(n+1):
             if dp[k] == INF:
                 continue  # no se puede alcanzar esta salud, omitir
-            # Al comer alimento i desde salud k:
-            nk = min(n, k + hi)
-            cost = dp[k] + di
+            
+            nk = min(n, k + hi)   # nueva salud
+            cost = dp[k] + di    # costo acumulado al comer este alimento
             if cost < new_dp[nk]:
                 new_dp[nk] = cost
         
         dp = new_dp
     
 
-    answer = total_d - dp[n]
+    if dp[n] == INF or dp[n] > total_d:
+        answer = 0
+    else:
+        answer = total_d - dp[n]
     
     print(answer)
 
