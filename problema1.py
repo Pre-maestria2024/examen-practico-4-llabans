@@ -1,46 +1,46 @@
 def main():
     import sys
-    import numpy as np
-    
     data = sys.stdin.read().strip().split()
     if not data:
         return
+    
     m, n = map(int, data[:2])
-    H = list(map(int, data[2:2+m]))
-    D = list(map(int, data[2+m:2+2*m]))
+    H = list(map(int, data[2:2+m]))           # h_i
+    D = list(map(int, data[2+m:2+2*m]))       # d_i
     
     total_d = sum(D)
     
-    INF = 10**9
+    if n == 0:
+        # Si n=0, ya estás "al máximo de salud" (o no hay que subir nada),
+        # entonces puedes vender todos los alimentos.
+        print(total_d)
+        return
+    
+    INF = 10**15
+    dp = [INF] * (n+1)
+    dp[0] = 0
+    
+    for i in range(m):
+        hi, di = H[i], D[i]
+        
+        new_dp = dp[:]  # clona la lista
+        
+        for k in range(n+1):
+            if dp[k] == INF:
+                continue  # no se puede alcanzar esta salud, omitir
+            # Al comer alimento i desde salud k:
+            nk = min(n, k + hi)
+            cost = dp[k] + di
+            if cost < new_dp[nk]:
+                new_dp[nk] = cost
+        
+        dp = new_dp
     
 
-    dp = np.full(n+1, INF, dtype=np.int64)
-    dp[0] = 0
-
-
-    for hi, di in zip(H, D):
-
-        new_dp = dp.copy()
-        
-
-        L = n - hi  # Para k < L se tiene k + hi < n
-        if L > 0:
-
-            indices = np.arange(L) + hi
-            candidate = dp[:L] + di
-            new_dp[indices] = np.minimum(new_dp[indices], candidate)
-        
- 
-        if L <= n:
-            candidate_n = dp[L:] + di  # Considera k de L hasta n
-            candidate_n_min = candidate_n.min() if candidate_n.size > 0 else INF
-            new_dp[n] = min(new_dp[n], candidate_n_min)
-            
-        dp = new_dp
-
-
     answer = total_d - dp[n]
-    sys.stdout.write(str(answer))
+    
+    print(answer)
+
 
 if __name__ == '__main__':
     main()
